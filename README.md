@@ -7,31 +7,6 @@ complexity, memory safety, readability and originality. It returns **one
 weighted grade** plus feedback. For every failure the feedback shows the input
 that breaks the program, the expected output beside it, and why.
 
-**Contract:** the same submission under the same rules always gets the same
-grade. Every report carries a fingerprint so you can check this
-(`autograder verify`).
-
-```
-$ ./grade.sh grade problems/max_subarray/submissions/s02_zero_init.c --rules problems/max_subarray/rules.json
-===== Grading report for s02_zero_init.c =====
-Overall grade: 84.2 / 100
-...
-test 03  (correctness, wrong answer)
-  INPUT:    3
-            -8 -3 -6
-  EXPECTED: -3
-  GOT:      0
-  WHY:      You printed 0 but the answer is -3 (negative). A running maximum
-            or best value initialised to 0 can never become negative.
-  FIX:      Initialise the best value from the first element (or LLONG_MIN),
-            not from 0.
-```
-
-Full reports for 15 sample submissions are in [`sample_outputs/`](sample_outputs).
-The design, the reasoning behind each method, and the **Usefulness and
-Limitations** section are in [`docs/DESIGN.md`](docs/DESIGN.md).
-
----
 
 ## 1. Installation and first run
 

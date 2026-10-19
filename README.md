@@ -33,63 +33,394 @@ Limitations** section are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ---
 
-## 1. Installation
+## 1. Installation and first run
 
-### Option A: Docker (recommended; this is how grades are made reproducible)
+Choose **Docker** for the most reproducible results. The `Dockerfile` is in the
+**repository root** (the same directory as this README), not inside the
+`autograder/` Python package directory. Run all Docker build commands from that
+repository root.
 
-Requirements: Docker (Docker Desktop, or colima on macOS). Ollama is optional;
-you only need it for the LLM readability metric.
+### Prerequisites
 
-```sh
-git clone <this repo> autograder && cd autograder
-docker build -t autograder:latest .          # pinned gcc 13, valgrind 3.22, cppcheck 2.13, lizard 1.17.10
-ollama pull qwen2.5:7b                       # optional: readability metric (runs locally, free, offline)
-./grade.sh tools                             # prints the toolchain the grades will be made with
+- Git, to clone the repository.
+- Docker Desktop on Windows/macOS, or Docker Engine on Linux.
+- (Optional) Ollama on your host computer if you want the local LLM readability
+  metric. The grader can run without Ollama; cached answers can be used offline.
+
+Check that Docker is installed and running:
+
+```text
+docker --version
+docker info
 ```
 
-`grade.sh` runs the image with the current folder mounted at `/work`. It also
-reaches Ollama on the host through `host.docker.internal` and keeps the LLM
-answer cache in `./.autograder-cache`.
+If `docker info` reports that it cannot connect to the daemon, start Docker
+Desktop (Windows/macOS) or the Docker service (Linux) and try again.
 
-### Option B: plain Python (for development)
+### Step 1 — Get the repository
 
-Requirements: Python 3.9+, a C compiler (`gcc` or `clang`). `cppcheck` and
-`valgrind` are optional but recommended.
+Replace `<REPOSITORY_URL>` with the clone URL of your repository:
 
 ```sh
-python3 -m venv .venv && . .venv/bin/activate
-pip install -e '.[dev]'
+git clone <REPOSITORY_URL> autograder-project
+cd autograder-project
+```
+
+Confirm that you are in the repository root. You should see this README,
+`Dockerfile`, `grade.sh`, `pyproject.toml`, `autograder/`, `problems/`, and
+`scripts/`.
+
+### Step 2 — Build the Docker image
+
+Run this command **from the repository root**:
+
+```sh
+docker build -t autograder:latest .
+```
+
+The final `.` is important: it makes the current repository root the build
+context, where the `Dockerfile` lives. The image includes the pinned Linux
+toolchain used for reproducible grading (including GCC, Valgrind, cppcheck and
+lizard).
+
+### Step 3 — Confirm the toolchain
+
+The direct Docker command works on Windows CMD, PowerShell, macOS and Linux:
+
+```sh
+docker run --rm -v "<ABSOLUTE_REPOSITORY_PATH>:/work" -w /work autograder:latest tools
+```
+
+Use the platform-specific form below instead of typing the placeholder path.
+
+**Windows — PowerShell**
+
+Run from the repository root:
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest tools
+```
+
+**Windows — Command Prompt (CMD)**
+
+Run from the repository root:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest tools
+```
+
+**macOS / Linux**
+
+Run from the repository root:
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work autograder:latest tools
+```
+
+On Windows, Docker Desktop must be running and configured to use Linux
+containers. If a bind mount fails, make sure the project is stored in a folder
+Docker Desktop can access.
+
+### Step 4 — Run commands and view help
+
+All paths passed to the grader are relative to the repository root mounted at
+`/work` inside the container. Run these commands from the folder containing
+`Dockerfile`, `grade.sh`, `autograder/`, and `problems/`.
+
+#### Windows — Command Prompt (CMD)
+
+**Show the main help and command-specific help:**
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest --help
+docker run --rm -v "%cd%:/work" -w /work autograder:latest grade --help
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch --help
+docker run --rm -v "%cd%:/work" -w /work autograder:latest verify --help
+docker run --rm -v "%cd%:/work" -w /work autograder:latest check-rules --help
+docker run --rm -v "%cd%:/work" -w /work autograder:latest tools
+```
+
+**Grade one submission** — creates a JSON report and a readable text report:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest grade problems\add_two_integers\submissions\add.c --rules problems\add_two_integers\rules.json
+```
+
+**Grade every submission in a folder** — writes per-file reports and a summary CSV:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems\max_subarray\submissions --rules problems\max_subarray\rules.json --out reports\max_subarray
+```
+
+**Check reproducibility** — grade the same submission three times and compare report fingerprints:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest verify problems\max_subarray\submissions\s05_leaky.c --rules problems\max_subarray\rules.json --runs 3
+```
+
+**Validate a rules file without grading:**
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest check-rules problems\max_subarray\rules.json
+```
+
+**Run in offline mode** — use cached LLM responses only, without calling a model:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems\max_subarray\submissions --rules problems\max_subarray\rules.json --out reports\max_subarray --offline
+```
+
+#### Windows — PowerShell
+
+PowerShell uses `${PWD}` for the current directory. Run each command from the
+repository root.
+
+**Help and toolchain:**
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest --help
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest grade --help
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest batch --help
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest verify --help
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest check-rules --help
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest tools
+```
+
+**Grade one submission:**
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest grade problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
+```
+
+**Grade a directory:**
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
+```
+
+**Verify, validate rules, or run offline:**
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest verify problems/max_subarray/submissions/s05_leaky.c --rules problems/max_subarray/rules.json --runs 3
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest check-rules problems/max_subarray/rules.json
+docker run --rm -v "${PWD}:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
+```
+
+#### macOS / Linux
+
+Run from the repository root. These examples use `$PWD` for the current
+directory.
+
+**Help and toolchain:**
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work autograder:latest --help
+docker run --rm -v "$PWD:/work" -w /work autograder:latest grade --help
+docker run --rm -v "$PWD:/work" -w /work autograder:latest batch --help
+docker run --rm -v "$PWD:/work" -w /work autograder:latest verify --help
+docker run --rm -v "$PWD:/work" -w /work autograder:latest check-rules --help
+docker run --rm -v "$PWD:/work" -w /work autograder:latest tools
+```
+
+**Grade one submission:**
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work autograder:latest grade problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
+```
+
+**Grade a directory:**
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
+```
+
+**Verify, validate rules, or run offline:**
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work autograder:latest verify problems/max_subarray/submissions/s05_leaky.c --rules problems/max_subarray/rules.json --runs 3
+docker run --rm -v "$PWD:/work" -w /work autograder:latest check-rules problems/max_subarray/rules.json
+docker run --rm -v "$PWD:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
+```
+
+#### Using `grade.sh` instead of typing Docker commands
+
+On macOS/Linux, WSL, or Git Bash with Docker Desktop configured, the wrapper
+can shorten the commands. Run from the repository root:
+
+```sh
+chmod +x grade.sh
+./grade.sh --help
+./grade.sh grade --help
+./grade.sh batch --help
+./grade.sh verify --help
+./grade.sh check-rules --help
+./grade.sh tools
+
+./grade.sh grade problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
+./grade.sh batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
+./grade.sh verify problems/max_subarray/submissions/s05_leaky.c --rules problems/max_subarray/rules.json --runs 3
+./grade.sh check-rules problems/max_subarray/rules.json
+./grade.sh batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
+```
+
+`grade.sh` is a Bash script and does not run directly in Windows CMD. In CMD
+or PowerShell, use the direct Docker commands in the relevant section above.
+For WSL/Git Bash, if the script reports `^M`, `CRLF`, or a bad interpreter
+error, convert it to LF line endings:
+
+```sh
+dos2unix grade.sh
+```
+
+Or, if `dos2unix` is unavailable:
+
+```sh
+sed -i 's/\r$//' grade.sh
+```
+
+#### What the commands do
+
+- `grade FILE --rules RULES`: grade one C submission.
+- `batch DIRECTORY --rules RULES`: grade all supported submissions in a folder.
+- `verify FILE --rules RULES --runs N`: repeat grading and compare report fingerprints.
+- `check-rules RULES`: validate a rules file without grading a submission.
+- `tools`: print the toolchain available inside the image.
+- `--out DIRECTORY`: choose where reports are written.
+- `--offline`: use cached LLM answers only; it does not call a model.
+- `--cache DIRECTORY`: choose the LLM answer cache directory.
+- `--keep`: preserve the temporary build directory for debugging.
+
+For the exact accepted arguments and defaults in your installed version, run
+the command-specific `--help` command shown above. If a particular command
+does not support `--help` in your version, use the top-level `--help` output
+and the repository's CLI implementation as the source of truth.
+
+The reports are written under `reports/` by default. If Docker reports that a
+rules file or submission cannot be found, check that you ran the command from
+the repository root and that the example paths exist. If a volume mount fails
+on Windows, confirm Docker Desktop is running and that the project directory
+is accessible to Docker Desktop.
+
+### Optional — Enable the LLM readability metric with Ollama
+
+Install Ollama on the **host** computer using the official instructions at
+<https://ollama.com/download>, then download the configured model:
+
+```sh
+ollama pull qwen2.5:7b
+```
+
+Make sure Ollama is running and that this model matches the `llm_review`
+configuration in the relevant `rules.json`. The Docker wrapper uses
+`host.docker.internal` to reach Ollama on the host. The LLM metric is optional;
+without a reachable model, use the committed cache where available:
+
+```sh
+./grade.sh batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
+```
+
+For Windows CMD, replace `./grade.sh` with the equivalent direct Docker command:
+
+```bat
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
+```
+
+### Option B — Run from Python (development)
+
+Native Python mode is useful for development, but the available checks depend
+on your operating system and installed tools. For the most comparable grades,
+use Docker.
+
+Requirements: Python supported by the project configuration, a C compiler
+(`gcc` or `clang`), and Git. `cppcheck` and `valgrind` are optional but
+recommended. Use the Python version declared in `pyproject.toml` if it differs
+from the examples below.
+
+**Windows — PowerShell**
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
 autograder tools
 ```
 
-On macOS some checks are reduced: valgrind and LeakSanitizer do not exist, and
-`RLIMIT_AS` is not enforced. As a result complexity falls back to CPU time, and
-the report flags it as `nondeterministic_measurement`. Leak detection and the
-memory limit are also off. Use Docker for grades you publish.
+If PowerShell blocks activation, you can skip activation and call the virtual
+environment directly:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\autograder.exe tools
+```
+
+You must also install a Windows-compatible C compiler and any optional tools
+you intend to use. Some sandbox/resource-limit features may be unavailable on
+native Windows; WSL2 or Docker is recommended for Linux-like execution.
+
+**macOS / Linux**
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e '.[dev]'
+autograder tools
+```
+
+On macOS some checks are reduced: Valgrind and LeakSanitizer are generally not
+available, and `RLIMIT_AS` is not enforced. Complexity may fall back to CPU
+time and reports may flag `nondeterministic_measurement`. Use Docker for grades
+you publish.
 
 ## 2. Usage
 
+All commands below assume you are in the repository root. In Docker, replace
+`./grade.sh` with `docker run --rm -v "$PWD:/work" -w /work autograder:latest`
+on macOS/Linux, or use the Windows-specific mount syntax shown above.
+
+### Grade one submission
+
 ```sh
-# grade one submission -> reports/<name>.json (machines) and reports/<name>.txt (student)
-./grade.sh grade  problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
+./grade.sh grade problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
+```
 
-# grade a whole folder -> one report per file + reports/summary.csv
-./grade.sh batch  problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
+### Grade every C file in a directory
 
-# prove the contract: grade N times, require identical report fingerprints
+```sh
+./grade.sh batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
+```
+
+This writes a report for each submission and a `summary.csv` under the output
+directory.
+
+### Verify reproducibility
+
+```sh
 ./grade.sh verify problems/max_subarray/submissions/s05_leaky.c --rules problems/max_subarray/rules.json --runs 3
+```
 
-# validate a rules file (weights, analyzer names, params, paths) without grading
+This grades the same submission multiple times and compares report fingerprints.
+
+### Validate a rules file without grading
+
+```sh
 ./grade.sh check-rules problems/max_subarray/rules.json
 ```
 
-Without Docker, replace `./grade.sh` with `autograder`. Useful flags:
-`--out DIR`, `--offline` (answer LLM metrics from the cache only, never call a
-model), `--cache DIR`, `--keep` (keep the temporary build folder for debugging).
+### Discover available tools
+
+```sh
+./grade.sh tools
+```
+
+Without Docker, replace `./grade.sh` with `autograder`. Useful flags include
+`--out DIR`, `--offline` (use cached LLM answers only), `--cache DIR`, and
+`--keep` (keep the temporary build directory for debugging).
 
 The LLM answers behind `sample_outputs/` are committed in `.autograder-cache/`.
-So `./grade.sh batch ... --offline` reproduces the sample grades exactly on a
-machine without Ollama or a GPU.
+Where the required cache entries exist, `--offline` can reproduce sample grades
+without Ollama or a GPU.
 
 ## 3. Writing rules
 

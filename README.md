@@ -19,7 +19,7 @@ repository root.
 
 - Git, to clone the repository.
 - Docker Desktop on Windows/macOS, or Docker Engine on Linux.
-- (Optional) Ollama on your host computer if you want the local LLM readability
+- Ollama on your host computer if you want the local LLM readability
   metric. The grader can run without Ollama; cached answers can be used offline.
 
 Check that Docker is installed and running:
@@ -276,7 +276,7 @@ the repository root and that the example paths exist. If a volume mount fails
 on Windows, confirm Docker Desktop is running and that the project directory
 is accessible to Docker Desktop.
 
-### Optional — Enable the LLM readability metric with Ollama
+### Enable the LLM readability metric with Ollama
 
 Install Ollama on the **host** computer using the official instructions at
 <https://ollama.com/download>, then download the configured model:

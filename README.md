@@ -118,31 +118,31 @@ docker run --rm -v "%cd%:/work" -w /work autograder:latest tools
 **Grade one submission** — creates a JSON report and a readable text report:
 
 ```bat
-docker run --rm -v "%cd%:/work" -w /work autograder:latest grade problems\add_two_integers\submissions\add.c --rules problems\add_two_integers\rules.json
+docker run --rm -v "%cd%:/work" -w /work autograder:latest grade problems/add_two_integers/submissions/add.c --rules problems/add_two_integers/rules.json
 ```
 
 **Grade every submission in a folder** — writes per-file reports and a summary CSV:
 
 ```bat
-docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems\max_subarray\submissions --rules problems\max_subarray\rules.json --out reports\max_subarray
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray
 ```
 
 **Check reproducibility** — grade the same submission three times and compare report fingerprints:
 
 ```bat
-docker run --rm -v "%cd%:/work" -w /work autograder:latest verify problems\max_subarray\submissions\s05_leaky.c --rules problems\max_subarray\rules.json --runs 3
+docker run --rm -v "%cd%:/work" -w /work autograder:latest verify problems/max_subarray/submissions/s05_leaky.c --rules problems/max_subarray/rules.json --runs 3
 ```
 
 **Validate a rules file without grading:**
 
 ```bat
-docker run --rm -v "%cd%:/work" -w /work autograder:latest check-rules problems\max_subarray\rules.json
+docker run --rm -v "%cd%:/work" -w /work autograder:latest check-rules problems/max_subarray/rules.json
 ```
 
 **Run in offline mode** — use cached LLM responses only, without calling a model:
 
 ```bat
-docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems\max_subarray\submissions --rules problems\max_subarray\rules.json --out reports\max_subarray --offline
+docker run --rm -v "%cd%:/work" -w /work autograder:latest batch problems/max_subarray/submissions --rules problems/max_subarray/rules.json --out reports/max_subarray --offline
 ```
 
 #### Windows — PowerShell

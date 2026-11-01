@@ -1,7 +1,5 @@
 # AutoGrader
 
-**Repository:** <https://github.com/Dynamic-Vector/autograder>
-
 **A reproducible, rule-driven grading system for C programs---with a
 local web interface and optional LLM-assisted asset generation.**
 

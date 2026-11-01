@@ -1,0 +1,102 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 42,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You design CORNER-CASE TEST INPUTS for a programming problem. You only write inputs, never outputs or code.\nEvery input must follow the given input format specification exactly (same lines, counts and bounds) and be small (a few lines).\nReply with JSON only: {\"families\": [{\"name\": snake_case_name, \"why\": one sentence, \"inputs\": [input strings using \\n for line breaks]}]}.\nGive up to 4 inputs per family."
+      },
+      {
+        "role": "user",
+        "content": "Problem title: add two integers\n\nStatement: (none given; infer the task from the title, the rules and the examples)\n\nLimits: time limit 1 s, memory limit 64 MB, required time complexity O(1).\n\nExample 1 input:\n7 5\nExample 1 expected output:\n12\n\nInput format specification:\n{\"version\": 1, \"lines\": [{\"tokens\": [{\"name\": \"a\", \"type\": \"int\", \"min\": -2147483648, \"max\": 2147483647}, {\"name\": \"b\", \"type\": \"int\", \"min\": -2147483648, \"max\": 2147483647}]}], \"unsupported_constraints\": []}\n\nChoose up to 6 families that are likely to break wrong solutions (extremes of every bound, sign changes, overflow, smallest/largest sizes, ties)."
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "families": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "why": {
+                "type": "string"
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "name",
+              "inputs"
+            ]
+          }
+        }
+      },
+      "required": [
+        "families"
+      ]
+    },
+    "cache_salt": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "raw": "{\"families\": [{\"name\": \"boundary_values\", \"inputs\": [\"-2147483648 1\", \"1 -2147483648\", \"2147483647 1\", \"1 2147483647\"]}, {\"name\": \"simple_values\", \"inputs\": [\"1 1\", \"0 0\", \"10 20\"]}, {\"name\": \"negative_values\", \"inputs\": [\"-1 -1\", \"-100 -200\"]}, {\"name\": \"overflow\", \"inputs\": [\"-2147483648 -1\", \"2147483647 2\"]}, {\"name\": \"ties\", \"inputs\": [\"100 100\", \"-100 -100\"]}, {\"name\": \"zero_values\", \"inputs\": [\"0 -1\", \"-1 0\"]}] }",
+  "data": {
+    "families": [
+      {
+        "name": "boundary_values",
+        "inputs": [
+          "-2147483648 1",
+          "1 -2147483648",
+          "2147483647 1",
+          "1 2147483647"
+        ]
+      },
+      {
+        "name": "simple_values",
+        "inputs": [
+          "1 1",
+          "0 0",
+          "10 20"
+        ]
+      },
+      {
+        "name": "negative_values",
+        "inputs": [
+          "-1 -1",
+          "-100 -200"
+        ]
+      },
+      {
+        "name": "overflow",
+        "inputs": [
+          "-2147483648 -1",
+          "2147483647 2"
+        ]
+      },
+      {
+        "name": "ties",
+        "inputs": [
+          "100 100",
+          "-100 -100"
+        ]
+      },
+      {
+        "name": "zero_values",
+        "inputs": [
+          "0 -1",
+          "-1 0"
+        ]
+      }
+    ]
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

@@ -1,0 +1,39 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 2024,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a teaching assistant. A student's C program gave a wrong result on one input. In at most 2 sentences explain WHY the code fails on this input, citing line numbers; then give a 1-sentence fix hint. Do not write code. Reply as JSON with keys explanation and fix_hint."
+      },
+      {
+        "role": "user",
+        "content": "Problem: max_subarray\n\nStudent code:\n  1| #include <stdio.h>\n  2| static long long step(long long acc, long long v) { return acc > 0 ? acc + v : v; }\n  3| static long long solve(int m) {\n  4|   long long v;\n  5|   if (scanf(\"%lld\", &v) != 1) return 0;\n  6|   long long top = v; long long acc = v;\n  7|   for (int k = 1; k < m; k++) {\n  8|     if (scanf(\"%lld\", &v) != 1) break;\n  9|     acc = step(acc, v);\n 10|     if (acc > top) top = acc;\n 11|   }\n 12|   return top;\n 13| }\n 14| int main(void) {\n 15|   int m;\n 16|   if (scanf(\"%d\", &m) != 1 || m < 1) return 1;\n 17|   printf(\"%lld\\n\", solve(m));\n 18|   return 0;\n 19| }\n\nInput:\n5\n-1000000000 -1000000000 -1000000000 -1000000000 -1000000000\n\nExpected output:\n0\n\nStudent output:\n-1000000000\n\nVerdict: wrong_answer\nAutomatic analysis: Expected 0 but got -1000000000."
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "explanation": {
+          "type": "string"
+        },
+        "fix_hint": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "explanation",
+        "fix_hint"
+      ]
+    }
+  },
+  "raw": "{\n  \"explanation\": \"The code fails because the initial values for `top` and `acc` are set to the first input value, and the `step` function does not handle negative values correctly, leading to an incorrect result when all inputs are negative.\",\n  \"fix_hint\": \"Initialize `top` to 0 and ensure the `step` function correctly handles negative values.\"\n}",
+  "data": {
+    "explanation": "The code fails because the initial values for `top` and `acc` are set to the first input value, and the `step` function does not handle negative values correctly, leading to an incorrect result when all inputs are negative.",
+    "fix_hint": "Initialize `top` to 0 and ensure the `step` function correctly handles negative values."
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

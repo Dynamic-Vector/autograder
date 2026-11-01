@@ -1,0 +1,35 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 242,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write a complete C11 program that reads the input from stdin and prints exactly the required output to stdout, nothing else (no prompts). Use only the standard C library. When the statement does not say otherwise, compute the mathematically exact answer (use long long where a sum or product may overflow int). Reply with JSON only: {\"code\": \"<the full program>\"}."
+      },
+      {
+        "role": "user",
+        "content": "Write the simplest solution that is obviously correct, even if it is slow (brute force is fine).\n\nProblem title: add two integers\n\nStatement: (none given; infer the task from the title, the rules and the examples)\n\nLimits: time limit 1 s, memory limit 64 MB, required time complexity O(1).\n\nExample 1 input:\n7 5\nExample 1 expected output:\n12"
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ]
+    },
+    "cache_salt": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "raw": "{\"code\": \"#include <stdio.h>\\n\\nint main() {\\n    int a, b;\\n    scanf(\\\"%d %d\\\", &a, &b);\\n    printf(\\\"%d\\\\n\\\", a + b);\\n    return 0;\\n}\"}",
+  "data": {
+    "code": "#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    printf(\"%d\\n\", a + b);\n    return 0;\n}"
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

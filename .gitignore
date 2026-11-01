@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+build/
+dist/
+/reports/
+.pytest_cache/
+.context/
+# local database + generated assets (the LLM answer cache stays committed)
+.autograder-cache/autograder.sqlite3*
+.autograder-cache/assets/
+.autograder-cache/generated/

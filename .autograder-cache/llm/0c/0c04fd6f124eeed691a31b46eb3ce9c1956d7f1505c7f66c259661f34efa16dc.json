@@ -1,0 +1,64 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 42,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You describe the INPUT FORMAT of a programming problem as JSON, so a tool can generate and check test inputs.\nReply with JSON only: {\"spec\": SPEC}. SPEC = {\"version\": 1, \"lines\": [LINE, ...], \"unsupported_constraints\": [strings]}.\nLINE = {\"tokens\": [TOKEN, ...]} with optional \"repeat\": N or the name of an earlier int (the line occurs that many times).\nTOKEN = {\"name\": identifier, \"type\": \"int\" | \"float\" | \"word\", ...}:\n- int: \"min\", \"max\" (integers, or the name of an earlier int); optional \"count\": N or earlier int name (an array of that many values on this line); optional \"distinct\": true, \"sorted\": \"asc\" | \"desc\"; optional \"size\": true on the ONE int that is the main input size (e.g. n).\n- float: \"min\", \"max\" numbers, \"decimals\".\n- word: \"charset\" (lower, upper, alpha, digits, alnum), \"min_len\", \"max_len\".\nUse exactly the bounds stated in the problem. When no bounds are stated, use the natural C type range (e.g. a 32-bit int: -2147483648..2147483647) and keep array sizes at most 200000.\nEvery sample input shown must match your spec. If a constraint cannot be expressed (e.g. \"the graph is connected\"), list it in \"unsupported_constraints\" instead of ignoring it.\nExample for \"first line n (1<=n<=100), second line n integers |a_i|<=1000\":\n{\"spec\": {\"version\": 1, \"lines\": [{\"tokens\": [{\"name\": \"n\", \"type\": \"int\", \"min\": 1, \"max\": 100, \"size\": true}]}, {\"tokens\": [{\"name\": \"a\", \"type\": \"int\", \"min\": -1000, \"max\": 1000, \"count\": \"n\"}]}], \"unsupported_constraints\": []}}"
+      },
+      {
+        "role": "user",
+        "content": "Problem title: add two integers\n\nStatement: (none given; infer the task from the title, the rules and the examples)\n\nLimits: time limit 1 s, memory limit 64 MB, required time complexity O(1).\n\nExample 1 input:\n7 5\nExample 1 expected output:\n12"
+      },
+      {
+        "role": "assistant",
+        "content": "{\"spec\": {\"version\": 1, \"lines\": [{\"tokens\": [{\"name\": \"a\", \"type\": \"int\", \"min\": -2147483648, \"max\": 2147483647}], \"repeat\": 2}]}}"
+      },
+      {
+        "role": "user",
+        "content": "A validator rejected that answer:\n- instructor input 1 does not match the spec: line 1: 1 unexpected extra value(s)\nReply again with corrected JSON only."
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "spec"
+      ]
+    },
+    "cache_salt": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "raw": "{\"spec\": {\"version\": 1, \"lines\": [{\"tokens\": [{\"name\": \"a\", \"type\": \"int\", \"min\": -2147483648, \"max\": 2147483647}, {\"name\": \"b\", \"type\": \"int\", \"min\": -2147483648, \"max\": 2147483647}]}], \"unsupported_constraints\": []}}",
+  "data": {
+    "spec": {
+      "version": 1,
+      "lines": [
+        {
+          "tokens": [
+            {
+              "name": "a",
+              "type": "int",
+              "min": -2147483648,
+              "max": 2147483647
+            },
+            {
+              "name": "b",
+              "type": "int",
+              "min": -2147483648,
+              "max": 2147483647
+            }
+          ]
+        }
+      ],
+      "unsupported_constraints": []
+    }
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

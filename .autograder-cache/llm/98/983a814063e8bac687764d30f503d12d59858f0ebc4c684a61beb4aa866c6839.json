@@ -1,0 +1,35 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 244,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You write a complete C11 program that reads the input from stdin and prints exactly the required output to stdout, nothing else (no prompts). Use only the standard C library. When the statement does not say otherwise, compute the mathematically exact answer (use long long where a sum or product may overflow int). Reply with JSON only: {\"code\": \"<the full program>\"}."
+      },
+      {
+        "role": "user",
+        "content": "Write a careful solution that handles every edge case explicitly (extreme values, overflow, empty or minimal input).\n\nProblem title: max subarray\n\nStatement: (none given; infer the task from the title, the rules and the examples)\n\nLimits: time limit 1 s, memory limit 256 MB, required time complexity O(n).\n\nSample input 1 (expected output not given):\n9\n-2 1 -3 4 -1 2 1 -5 4"
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ]
+    },
+    "cache_salt": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "raw": "{\"code\": \"#include <stdio.h>\\n\\nint main() {\\n    int n;\\n    scanf(\\\"%d\\\", &n);\\n    long long max_so_far = 0, max_ending_here = 0;\\n    for (int i = 0; i < n; ++i) {\\n        long long x;\\n        scanf(\\\"%lld\\\", &x);\\n        max_ending_here = max_ending_here + x;\\n        if (max_ending_here < 0) {\\n            max_ending_here = 0;\\n        }\\n        if (max_so_far < max_ending_here) {\\n            max_so_far = max_ending_here;\\n        }\\n    }\\n    printf(\\\"%lld\\\\n\\\", max_so_far);\\n    return 0;\\n}\"}",
+  "data": {
+    "code": "#include <stdio.h>\n\nint main() {\n    int n;\n    scanf(\"%d\", &n);\n    long long max_so_far = 0, max_ending_here = 0;\n    for (int i = 0; i < n; ++i) {\n        long long x;\n        scanf(\"%lld\", &x);\n        max_ending_here = max_ending_here + x;\n        if (max_ending_here < 0) {\n            max_ending_here = 0;\n        }\n        if (max_so_far < max_ending_here) {\n            max_so_far = max_ending_here;\n        }\n    }\n    printf(\"%lld\\n\", max_so_far);\n    return 0;\n}"
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

@@ -1,0 +1,87 @@
+{
+  "request": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "temperature": 0.0,
+    "seed": 42,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You design CORNER-CASE TEST INPUTS for a programming problem. You only write inputs, never outputs or code.\nEvery input must follow the given input format specification exactly (same lines, counts and bounds) and be small (a few lines).\nReply with JSON only: {\"families\": [{\"name\": snake_case_name, \"why\": one sentence, \"inputs\": [input strings using \\n for line breaks]}]}.\nGive up to 4 inputs per family."
+      },
+      {
+        "role": "user",
+        "content": "Problem title: max subarray\n\nStatement: (none given; infer the task from the title, the rules and the examples)\n\nLimits: time limit 1 s, memory limit 256 MB, required time complexity O(n).\n\nSample input 1 (expected output not given):\n9\n-2 1 -3 4 -1 2 1 -5 4\n\nInput format specification:\n{\"version\": 1, \"lines\": [{\"tokens\": [{\"name\": \"n\", \"type\": \"int\", \"min\": 1, \"max\": 200000, \"size\": true}]}, {\"tokens\": [{\"name\": \"a\", \"type\": \"int\", \"min\": -1000000000, \"max\": 1000000000, \"count\": \"n\"}]}], \"unsupported_constraints\": []}\n\nChoose up to 6 families that are likely to break wrong solutions (extremes of every bound, sign changes, overflow, smallest/largest sizes, ties)."
+      }
+    ],
+    "schema": {
+      "type": "object",
+      "properties": {
+        "families": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "why": {
+                "type": "string"
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "name",
+              "inputs"
+            ]
+          }
+        }
+      },
+      "required": [
+        "families"
+      ]
+    },
+    "cache_salt": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+  },
+  "raw": "{\n  \"families\": [\n    {\n      \"name\": \"all_positive\",\n      \"inputs\": [\n        \"5\\n1 2 3 4 5\"\n      ]\n    },\n    {\n      \"name\": \"all_negative\",\n      \"inputs\": [\n        \"5\\n-1 -2 -3 -4 -5\"\n      ]\n    },\n    {\n      \"name\": \"single_element\",\n      \"inputs\": [\n        \"1\\n1000000000\"\n      ]\n    },\n    {\n      \"name\": \"large_array\",\n      \"inputs\": [\n        \"100000\\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100\"\n      ]\n    },\n    {\n      \"name\": \"alternating_signs\",\n      \"inputs\": [\n        \"9\\n1 -1 1 -1 1 -1 1 -1 1\"\n      ]\n    }\n  ]\n}",
+  "data": {
+    "families": [
+      {
+        "name": "all_positive",
+        "inputs": [
+          "5\n1 2 3 4 5"
+        ]
+      },
+      {
+        "name": "all_negative",
+        "inputs": [
+          "5\n-1 -2 -3 -4 -5"
+        ]
+      },
+      {
+        "name": "single_element",
+        "inputs": [
+          "1\n1000000000"
+        ]
+      },
+      {
+        "name": "large_array",
+        "inputs": [
+          "100000\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100"
+        ]
+      },
+      {
+        "name": "alternating_signs",
+        "inputs": [
+          "9\n1 -1 1 -1 1 -1 1 -1 1"
+        ]
+      }
+    ]
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e"
+}

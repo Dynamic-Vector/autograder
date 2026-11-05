@@ -430,6 +430,14 @@ curl http://localhost:11434/api/tags
 Restrict access to the Ollama port using your host firewall. Do not
 expose it to untrusted networks.
 
+### Necessary Permissions:
+``` bash
+mkdir -p .autograder-cache
+```
+``` bash
+chmod 777 .autograder-cache
+```
+
 ### 5.5 Start the web application
 
 From the repository root:
